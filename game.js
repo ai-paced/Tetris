@@ -1,5 +1,21 @@
 'use strict';
-if(new URLSearchParams(location.search).get('view')==='mobile'){document.querySelector('#mobile-style').media='all';document.querySelector('#stage').style.maxWidth='390px';}
+const forcedMobile=new URLSearchParams(location.search).get('view')==='mobile';
+if(forcedMobile){document.querySelector('#mobile-style').media='all';}
+const viewToggle=document.querySelector('#view-toggle');
+viewToggle.textContent=forcedMobile?'Automatische Ansicht':'Handyansicht';
+viewToggle.addEventListener('click',()=>{const url=new URL(location.href);if(forcedMobile)url.searchParams.delete('view');else url.searchParams.set('view','mobile');location.href=url.href;});
+
+function fitMobileLayout(){
+ const mobile=forcedMobile||matchMedia('(max-width:1024px)').matches;
+ const landscape=innerWidth>innerHeight;
+ document.body.classList.toggle('mobile-wide',mobile&&landscape);
+ if(!mobile)return;
+ const width=landscape?1100:720,height=900;
+ const scale=Math.min((innerWidth-16)/width,(innerHeight-16)/height);
+ document.documentElement.style.setProperty('--mobile-scale',Math.max(.1,scale));
+}
+window.addEventListener('resize',fitMobileLayout);
+fitMobileLayout();
 
 const {Tetris,SHAPES,COLORS}=BeachTetris;
 const game=new Tetris();
