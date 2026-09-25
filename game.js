@@ -2,16 +2,24 @@
 const forcedMobile=new URLSearchParams(location.search).get('view')==='mobile';
 if(forcedMobile){document.querySelector('#mobile-style').media='all';}
 function fitMobileLayout(){
+ const viewport=window.visualViewport;
+ const vw=viewport?.width||document.documentElement.clientWidth;
+ const vh=viewport?.height||document.documentElement.clientHeight;
  const mobile=forcedMobile||matchMedia('(max-width:1024px)').matches;
- const landscape=innerWidth>innerHeight;
+ const landscape=vw>vh;
  document.body.classList.toggle('mobile-wide',mobile&&landscape);
  if(!mobile)return;
  const width=landscape?1100:720,height=900;
- const padding=Math.max(20,Math.min(40,innerWidth*.04));
- const scale=Math.min((innerWidth-2*padding)/width,(innerHeight-2*padding)/height);
- document.documentElement.style.setProperty('--mobile-scale',Math.max(.1,scale));
+ const padding=Math.max(20,Math.min(40,vw*.04));
+ const scale=Math.max(.01,Math.min((vw-2*padding)/width,(vh-2*padding)/height));
+ const style=document.documentElement.style;
+ style.setProperty('--mobile-scale',scale);
+ style.setProperty('--mobile-left',((viewport?.offsetLeft||0)+(vw-width*scale)/2)+'px');
+ style.setProperty('--mobile-top',((viewport?.offsetTop||0)+(vh-height*scale)/2)+'px');
 }
 window.addEventListener('resize',fitMobileLayout);
+window.visualViewport?.addEventListener('resize',fitMobileLayout);
+window.visualViewport?.addEventListener('scroll',fitMobileLayout);
 fitMobileLayout();
 
 const {Tetris,SHAPES,COLORS}=BeachTetris;
