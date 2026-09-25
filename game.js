@@ -1,17 +1,14 @@
 'use strict';
 const forcedMobile=new URLSearchParams(location.search).get('view')==='mobile';
 if(forcedMobile){document.querySelector('#mobile-style').media='all';}
-const viewToggle=document.querySelector('#view-toggle');
-viewToggle.textContent=forcedMobile?'Automatische Ansicht':'Handyansicht';
-viewToggle.addEventListener('click',()=>{const url=new URL(location.href);if(forcedMobile)url.searchParams.delete('view');else url.searchParams.set('view','mobile');location.href=url.href;});
-
 function fitMobileLayout(){
  const mobile=forcedMobile||matchMedia('(max-width:1024px)').matches;
  const landscape=innerWidth>innerHeight;
  document.body.classList.toggle('mobile-wide',mobile&&landscape);
  if(!mobile)return;
  const width=landscape?1100:720,height=900;
- const scale=Math.min((innerWidth-16)/width,(innerHeight-16)/height);
+ const padding=Math.max(20,Math.min(40,innerWidth*.04));
+ const scale=Math.min((innerWidth-2*padding)/width,(innerHeight-2*padding)/height);
  document.documentElement.style.setProperty('--mobile-scale',Math.max(.1,scale));
 }
 window.addEventListener('resize',fitMobileLayout);
